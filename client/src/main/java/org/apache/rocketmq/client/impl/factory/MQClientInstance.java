@@ -231,14 +231,19 @@ public class MQClientInstance {
                         this.mQClientAPIImpl.fetchNameServerAddr();
                     }
                     // Start request-response channel
+                    //启动netty通信信道
                     this.mQClientAPIImpl.start();
                     // Start various schedule tasks
+                    //启动定时任务调度
                     this.startScheduledTask();
                     // Start pull service
+                    //拉取消息任务开始是
                     this.pullMessageService.start();
                     // Start rebalance service
+                    //负载均衡计算开始
                     this.rebalanceService.start();
                     // Start push service
+                    //开始推送消息任务
                     this.defaultMQProducer.getDefaultMQProducerImpl().start(false);
                     log.info("the client factory [{}] start OK", this.clientId);
                     this.serviceState = ServiceState.RUNNING;
@@ -597,6 +602,7 @@ public class MQClientInstance {
                             1000 * 3);
                         if (topicRouteData != null) {
                             for (QueueData data : topicRouteData.getQueueDatas()) {
+                                //设置queue的数量
                                 int queueNums = Math.min(defaultMQProducer.getDefaultTopicQueueNums(), data.getReadQueueNums());
                                 data.setReadQueueNums(queueNums);
                                 data.setWriteQueueNums(queueNums);
@@ -622,6 +628,7 @@ public class MQClientInstance {
                             }
 
                             // Update Pub info
+                            //更新发布以及订阅关系,topic发布信息
                             {
                                 TopicPublishInfo publishInfo = topicRouteData2TopicPublishInfo(topic, topicRouteData);
                                 publishInfo.setHaveTopicRouterInfo(true);
@@ -636,6 +643,7 @@ public class MQClientInstance {
                             }
 
                             // Update sub info
+                            //更新MessageQueue信息
                             {
                                 Set<MessageQueue> subscribeInfo = topicRouteData2TopicSubscribeInfo(topic, topicRouteData);
                                 Iterator<Entry<String, MQConsumerInner>> it = this.consumerTable.entrySet().iterator();
